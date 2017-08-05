@@ -1,0 +1,88 @@
+<!--
+    Objective: Utilize Google Geo API to fetch location information based on user entered Address
+    Technologies: HTML , Javascript, Axios, bootstrap 
+    Inspired by : Traversy Media Geo Code 
+    -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title> My Geocode App </title>
+    </head>
+ <!-- Defined HTML tags to include location information recieved-->
+    <div class="container">
+    <input type="text" id="getAddress" class="form-control"/>
+    <button id="Submission" class="btn btn-primary"> Submit </button>
+    <div class="card-block" id="formatted-address"></div>
+    <div class="card-block" id="address-components"></div>
+    <div class="card-block" id="geometry"></div>
+
+        </div>
+    <body>
+
+        <script>
+            document.getElementById('Submission').addEventListener('click',(e)=>{ // add click functionality to the submit button
+               
+                     geocode(); //call geocode function when user enters the location and submits
+            });
+            geocode=()=>{
+                let getLocation = document.getElementById('getAddress').value; //get value from user input 
+                const  location =  getLocation;
+                const key=`AIzaSyDtktJFZon7OtmtSNBcTumyAcL6qQ0RiCw`;
+                const URL =`https://maps.googleapis.com/maps/api/geocode/json`;
+
+
+
+                axios.get(`${URL}?address=${location}&${key}`) //axios rest call 
+                .then((response)=> {
+
+                    let formattedAddress= response.data.results[0].formatted_address;
+                    let formattedAddressOutput=`
+                    <ul class="list-group">
+                    <li class="list-group-item"> ${formattedAddress} </li>
+                    </ul>
+                    `;
+
+                let addressComponents= response.data.results[0].address_components;
+                let addressComponentsOutput= `<ul class="list-group">`;
+
+                    addressComponents.forEach((components)=>{
+                        addressComponentsOutput +=`
+                        <li 
+                        class="list-group-item"> <strong> ${components.types[0]
+                        
+                        } </strong> :${components.long_name}</li>
+                        `;
+                    });
+                    addressComponentsOutput += "</ul>";
+                        console.log(addressComponentsOutput);
+
+                let geometryComponents= response.data.results[0].geometry;
+                
+                let geometryComponentsOutput= `
+                        <ul class="list-group">
+                        <li class="list-group-item">
+                        <strong>latitude: </strong> ${geometryComponents.location.lat}</li>
+                          <li class="list-group-item">
+                        <strong>latitude: </strong> ${geometryComponents.location.lng}</li>
+
+                `;
+
+                 /*
+                * Get elements of each components in the div 
+                * Set the innerHTML value based on the values recieved
+                **/
+
+                    document.getElementById('geometry').innerHTML=geometryComponentsOutput;
+                    document.getElementById('formatted-address').innerHTML=formattedAddressOutput;
+                    document.getElementById('address-components').innerHTML= addressComponentsOutput;
+                })
+                .catch((err)=>{
+                    console.log(err);
+                })
+            }
+    
+            </script>
+    </body>
+</html>
